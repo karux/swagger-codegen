@@ -20,6 +20,7 @@ target
 .lib
 atlassian-ide-plugin.xml
 .DS_Store
+__MACOSX
 packages/
 .pub
 .packages

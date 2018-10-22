@@ -13,13 +13,15 @@ using Newtonsoft.Json;
 {{#models}}
 {{#model}}
 namespace {{packageName}}.Models
-{ {{#isEnum}}{{>enumClass}}{{/isEnum}}{{^isEnum}}
+{ {{#isEnum}}{{>enumOuterClass}}{{/isEnum}}{{^isEnum}}
     /// <summary>
     /// {{description}}
     /// </summary>
     [DataContract]
     public partial class {{classname}} : {{#parent}}{{{parent}}}, {{/parent}}IEquatable<{{classname}}>
-    { {{#vars}}{{#isEnum}}{{>enumClass}}{{/isEnum}}{{#items.isEnum}}{{#items}}{{>enumClass}}{{/items}}{{/items.isEnum}}
+    { 
+    {{#allVars}}{{#isEnum}}{{>enumClass}}{{/isEnum}}{{#items.isEnum}}{{#items}}{{>enumClass}}{{/items}}{{/items.isEnum}}
+
         /// <summary>
         /// {{^description}}Gets or Sets {{{name}}}{{/description}}{{#description}}{{description}}{{/description}}
         /// </summary>
@@ -38,7 +40,7 @@ namespace {{packageName}}.Models
         {{/isEnum}}
         {{#hasMore}}
         {{/hasMore}}
-        {{/vars}}
+        {{/allVars}}
 
         /// <summary>
         /// Returns the string presentation of the object
@@ -48,9 +50,9 @@ namespace {{packageName}}.Models
         {
             var sb = new StringBuilder();
             sb.Append("class {{classname}} {\n");
-            {{#vars}}
+            {{#allVars}}
             sb.Append("  {{name}}: ").Append({{name}}).Append("\n");
-            {{/vars}}
+            {{/allVars}}
             sb.Append("}\n");
             return sb.ToString();
         }
@@ -59,7 +61,7 @@ namespace {{packageName}}.Models
         /// Returns the JSON string presentation of the object
         /// </summary>
         /// <returns>JSON string presentation of the object</returns>
-        public {{#parent}} new {{/parent}}string ToJson()
+        public string ToJson()
         {
             return JsonConvert.SerializeObject(this, Formatting.Indented);
         }
@@ -86,17 +88,15 @@ namespace {{packageName}}.Models
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
 
-            return {{#vars}}{{#isNotContainer}}
+            return {{#allVars}}{{#isNotContainer}}
                 (
                     {{name}} == other.{{name}} ||
-                    {{name}} != null &&
-                    {{name}}.Equals(other.{{name}})
+                    ({{name}} != null && {{name}}.Equals(other.{{name}}))
                 ){{#hasMore}} && {{/hasMore}}{{/isNotContainer}}{{^isNotContainer}}
                 (
                     {{name}} == other.{{name}} ||
-                    {{name}} != null &&
-                    {{name}}.SequenceEqual(other.{{name}})
-                ){{#hasMore}} && {{/hasMore}}{{/isNotContainer}}{{/vars}}{{^vars}}false{{/vars}};
+                    ({{name}} != null && {{name}}.SequenceEqual(other.{{name}}))
+                ){{#hasMore}} && {{/hasMore}}{{/isNotContainer}}{{/allVars}}{{^allVars}}false{{/allVars}};
         }
 
         /// <summary>
@@ -109,10 +109,10 @@ namespace {{packageName}}.Models
             {
                 var hashCode = 41;
                 // Suitable nullity checks etc, of course :)
-                {{#vars}}
+                {{#allVars}}
                     if ({{name}} != null)
                     hashCode = hashCode * 59 + {{name}}.GetHashCode();
-                {{/vars}}
+                {{/allVars}}
                 return hashCode;
             }
         }

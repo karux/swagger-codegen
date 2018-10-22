@@ -235,6 +235,7 @@ public class DefaultCodegen {
 
             // for enum model
             if (Boolean.TRUE.equals(cm.isEnum) && cm.allowableValues != null) {
+            	
                 Map<String, Object> allowableValues = cm.allowableValues;
                 List<Object> values = (List<Object>) allowableValues.get("values");
                 List<Map<String, String>> enumVars = new ArrayList<Map<String, String>>();
@@ -261,6 +262,9 @@ public class DefaultCodegen {
             // update codegen property enum with proper naming convention
             // and handling of numbers, special characters
             for (CodegenProperty var : cm.vars) {
+                updateCodegenPropertyEnum(var);
+            }
+            for (CodegenProperty var : cm.allVars) {
                 updateCodegenPropertyEnum(var);
             }
 
@@ -1801,7 +1805,7 @@ public class DefaultCodegen {
             property.enumName = toEnumName(property);
         } else {
             property.datatypeWithEnum = property.datatype;
-        }
+        } 
 
         property.baseType = getSwaggerType(p);
 
@@ -2555,7 +2559,6 @@ public class DefaultCodegen {
             p.isEnum = cp.isEnum;
             p._enum = cp._enum;
             p.allowableValues = cp.allowableValues;
-
 
             if (cp.items != null && cp.items.isEnum) {
                 p.datatypeWithEnum = cp.datatypeWithEnum;
@@ -3716,6 +3719,8 @@ public class DefaultCodegen {
         }
 
         // put "enumVars" map into `allowableValues", including `name` and `value`
+        // this block will remove any previous map additions, such as isString, from enumVar 
+        // TODO: perform a deeper copy of the allowableValues model to retain other keys beyond 'name' and 'value' (See AbstractCSharpCodegen.deepCopyAllowableValues)
         List<Map<String, String>> enumVars = new ArrayList<Map<String, String>>();
         String commonPrefix = findCommonPrefixOfVars(values);
         int truncateIdx = commonPrefix.length();

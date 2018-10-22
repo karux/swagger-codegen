@@ -148,8 +148,14 @@ public class CodegenConstants {
     public static final String OPTIONAL_PROJECT_FILE = "optionalProjectFile";
     public static final String OPTIONAL_PROJECT_FILE_DESC = "Generate {PackageName}.csproj.";
 
+    public static final String OPTIONAL_PROJECT_ROOT_GUID = "projectRootGuid";
+    public static final String OPTIONAL_PROJECT_ROOT_GUID_DESC = "The GUID that will be associated with the root project of an ASP.NET Core solution";
+
     public static final String OPTIONAL_PROJECT_GUID = "packageGuid";
     public static final String OPTIONAL_PROJECT_GUID_DESC = "The GUID that will be associated with the C# project";
+
+    public static final String OPTIONAL_SOLUTION_GUID = "solutionGuid";
+    public static final String OPTIONAL_SOLUTION_GUID_DESC = "The GUID that will be associated with the C# solution";
 
     public static final String MODEL_PROPERTY_NAMING = "modelPropertyNaming";
     public static final String MODEL_PROPERTY_NAMING_DESC = "Naming convention for the property: 'camelCase', 'PascalCase', 'snake_case' and 'original', which keeps the original name";

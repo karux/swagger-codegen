@@ -408,7 +408,7 @@ public abstract class AbstractCSharpCodegen extends DefaultCodegen implements Co
                         // This is different in C# than most other generators, because enums in C# are compiled to integral types,
                         // while enums in many other languages are true objects.
                         CodegenModel refModel = enumRefs.get(var.datatype);
-                        var.allowableValues = refModel.allowableValues;
+                        var.allowableValues = deepCopyAllowableValues(refModel.allowableValues);
                         var.isEnum = true;
 
                         updateCodegenPropertyEnum(var);
@@ -417,9 +417,11 @@ public abstract class AbstractCSharpCodegen extends DefaultCodegen implements Co
                         var.isPrimitiveType = true;
                     }
                 }
-
+                
+                
                 // We're looping all models here.
                 if (model.isEnum) {
+                	io.swagger.util.Json.prettyPrint(model);
                     // We now need to make allowableValues.enumVars look like the context of CodegenProperty
                     Boolean isString = false;
                     Boolean isInteger = false;
@@ -461,13 +463,38 @@ public abstract class AbstractCSharpCodegen extends DefaultCodegen implements Co
                     if (!newEnumVars.isEmpty()) {
                         model.allowableValues.put("enumVars", newEnumVars);
                     }
-                }
+
+                    io.swagger.util.Json.prettyPrint(model);
+                    
+                    }
             } else {
                 LOGGER.warn("Expected to retrieve model %s by name, but no model was found. Check your -Dmodels inclusions.", swaggerName);
             }
         }
     }
 
+    private Map<String,Object> deepCopyAllowableValues(Map<String,Object> allowableValues) {
+    	Map<String, Object> allowableValuesCopy = new HashMap<>();
+        List<Map<String, Object>> enumVars = (ArrayList<Map<String, Object>>)allowableValues.get("enumVars");
+        List<Map<String, Object>> newEnumVars = new ArrayList<Map<String, Object>>();
+        for( Map<String, Object> enumVar : enumVars) {
+        	for (Map.Entry<String, Object> entry : enumVar.entrySet()) {
+        		final Map<String, Object> newEnumVar = new HashMap<>();
+   				newEnumVar.put(entry.getKey(), entry.getValue());
+        		newEnumVars.add(newEnumVar);
+        	}
+        }
+        allowableValuesCopy.put("enumVars", newEnumVars);
+    	
+        List<Object> values = (List<Object>) allowableValues.get("values");
+        List<Object> newValues = new ArrayList<>();
+        for( Object object : values) {
+        	newValues.add(object);
+        }
+        allowableValuesCopy.put("values", newValues);
+        return allowableValuesCopy;
+    }
+    
     /**
      * Update codegen property's enum by adding "enumVars" (with name and value)
      *

@@ -20,7 +20,9 @@ import static java.util.UUID.randomUUID;
 
 public class AspNetCoreServerCodegen extends AbstractCSharpCodegen {
 
-    private String packageGuid = "{" + randomUUID().toString().toUpperCase() + "}";
+    private String projectRootGuid = null;
+    private String packageGuid = null;
+    private String solutionGuid = null;
 
     @SuppressWarnings("hiding")
     protected Logger LOGGER = LoggerFactory.getLogger(AspNetCoreServerCodegen.class);
@@ -28,7 +30,8 @@ public class AspNetCoreServerCodegen extends AbstractCSharpCodegen {
     public AspNetCoreServerCodegen() {
         super();
 
-        setSourceFolder("src");
+        //setSourceFolder("src");
+        setSourceFolder(".");
         outputFolder = "generated-code" + File.separator + this.getName();
 
         modelTemplateFiles.put("model.mustache", ".cs");
@@ -99,11 +102,37 @@ public class AspNetCoreServerCodegen extends AbstractCSharpCodegen {
     @Override
     public void processOpts() {
         super.processOpts();
-
+        
+        if (additionalProperties.containsKey(CodegenConstants.OPTIONAL_PROJECT_ROOT_GUID)) {
+            setProjectRootGuid((String) additionalProperties.get(CodegenConstants.OPTIONAL_PROJECT_ROOT_GUID));
+        } else {
+        	setProjectRootGuid("{" + randomUUID().toString().toUpperCase() + "}");
+        }
+        additionalProperties.put("projectRootGuid", projectRootGuid);
+        
         if (additionalProperties.containsKey(CodegenConstants.OPTIONAL_PROJECT_GUID)) {
             setPackageGuid((String) additionalProperties.get(CodegenConstants.OPTIONAL_PROJECT_GUID));
+        } else {
+        	setPackageGuid("{" + randomUUID().toString().toUpperCase() + "}");
         }
         additionalProperties.put("packageGuid", packageGuid);
+
+        if (additionalProperties.containsKey(CodegenConstants.OPTIONAL_SOLUTION_GUID)) {
+            setSolutionGuid((String) additionalProperties.get(CodegenConstants.OPTIONAL_SOLUTION_GUID));
+        } else {
+        	setSolutionGuid("{" + randomUUID().toString().toUpperCase() + "}");
+        }
+        additionalProperties.put("solutionGuid", solutionGuid);
+        
+        /*
+         * for ExtensibilityGlobal
+         */
+//        if (additionalProperties.containsKey(CodegenConstants.OPTIONAL_SOLUTION_GUID)) {
+//            setSolutionGuid((String) additionalProperties.get(CodegenConstants.OPTIONAL_SOLUTION_GUID));
+//        } else {
+//        	setSolutionGuid("{" + randomUUID().toString().toUpperCase() + "}");
+//        }
+//        additionalProperties.put("solutionGuid", solutionGuid);
         
         additionalProperties.put("dockerTag", this.packageName.toLowerCase());
 
@@ -142,6 +171,8 @@ public class AspNetCoreServerCodegen extends AbstractCSharpCodegen {
 
     @Override
     public void setSourceFolder(final String sourceFolder) {
+    	this.sourceFolder = sourceFolder;
+    	/*
         if(sourceFolder == null) {
             LOGGER.warn("No sourceFolder specified, using default");
             this.sourceFolder =  "src" + File.separator + this.packageName;
@@ -151,10 +182,19 @@ public class AspNetCoreServerCodegen extends AbstractCSharpCodegen {
         } else {
             this.sourceFolder = sourceFolder;
         }
+        */
     }
 
+    public void setProjectRootGuid(String projectRootGuid) {
+        this.projectRootGuid = projectRootGuid;
+    }
+    
     public void setPackageGuid(String packageGuid) {
         this.packageGuid = packageGuid;
+    }
+    
+    public void setSolutionGuid(String solutionGuid) {
+        this.solutionGuid = solutionGuid;
     }
     
     @Override
