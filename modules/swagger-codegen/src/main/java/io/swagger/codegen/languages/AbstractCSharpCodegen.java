@@ -421,8 +421,7 @@ public abstract class AbstractCSharpCodegen extends DefaultCodegen implements Co
                 
                 // We're looping all models here.
                 if (model.isEnum) {
-                	io.swagger.util.Json.prettyPrint(model);
-                    // We now need to make allowableValues.enumVars look like the context of CodegenProperty
+                	// We now need to make allowableValues.enumVars look like the context of CodegenProperty
                     Boolean isString = false;
                     Boolean isInteger = false;
                     Boolean isLong = false;
@@ -463,10 +462,8 @@ public abstract class AbstractCSharpCodegen extends DefaultCodegen implements Co
                     if (!newEnumVars.isEmpty()) {
                         model.allowableValues.put("enumVars", newEnumVars);
                     }
-
-                    io.swagger.util.Json.prettyPrint(model);
                     
-                    }
+                }
             } else {
                 LOGGER.warn("Expected to retrieve model %s by name, but no model was found. Check your -Dmodels inclusions.", swaggerName);
             }
